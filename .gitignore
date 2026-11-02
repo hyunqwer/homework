@@ -1,0 +1,15 @@
+# Local hosting identity and runtime state
+.openai/
+.sites-runtime/
+.env
+.env.*
+!.env.example
+node_modules/
+
+# Local review screenshots and personal data backups
+/preview.png
+/class-preview.png
+/class-input-preview.png
+삼남매영어-백업-*.json
+*.tar.gz
+*.log
