@@ -43,10 +43,30 @@ node check.cjs
 
 ## 데이터 저장
 
-입력한 기록은 현재 브라우저의 localStorage에 저장됩니다. 서버 저장 및 기기 간 자동 동기화는 없습니다. 다른 기기로 옮기거나 사이트 주소가 바뀔 때에는 기존 페이지에서 백업을 저장한 후 새 페이지에서 불러오세요.
+웹 주소: https://homework-samgyosi.firebaseapp.com
+
+Firebase Authentication의 Google 로그인과 Cloud Firestore를 사용합니다. 현재는 프로젝트 관리자 Google 계정으로만 가족 기록을 읽고 쓸 수 있습니다. PC·휴대폰에서 같은 계정으로 로그인하면 같은 기록을 불러옵니다.
+
+처음 연결할 때 이 기기의 기록으로 시작하거나 기존 JSON 백업을 불러올 수 있습니다. 기존 로컬 페이지의 기록은 먼저 백업을 저장한 후 웹 사이트에서 불러오세요. 클라우드 기록을 처음 불러오기 전의 기기 데이터와 미전송 변경 내용도 localStorage에 보관합니다.
+
+저장에는 문서 버전을 확인하는 Firestore 트랜잭션을 사용합니다. 두 기기에서 동시에 수정하면 이전 기록으로 덮어쓰는 대신 충돌 안내가 나타납니다. 기기 변경을 백업하고 최신 클라우드 기록을 불러온 뒤 필요한 변경을 다시 반영하세요. 연결 실패 시 저장 완료로 표시하지 않으며 다시 연결 버튼을 제공합니다.
+
+현재 가족 기록은 `families/samnammae` 문서의 JSON payload로 저장하며 최대 약 780KB로 제한합니다. 문서 삭제는 클라이언트에서 허용하지 않습니다. 허용 계정은 Firestore의 비공개 `access/{Firebase Auth UID}` 문서에서 `allowed: true`로 관리합니다. 이 목록은 클라이언트에서 직접 읽거나 수정할 수 없으며, 관리자 콘솔 또는 IAM 권한이 있는 관리 도구로만 변경합니다. 개인 이메일과 UID는 공개 소스에 넣지 않습니다.
+
+## Firebase 배포
+
+```sh
+node check.cjs
+node check-sync.mjs
+firebase deploy --only firestore:rules,hosting --project homework-samgyosi
+```
+
+Firestore 기본 데이터베이스는 서울 리전(`asia-northeast3`), Standard 에디션입니다. Google 로그인 제공업체는 Firebase Console에서 설정합니다. Firebase 웹 구성은 공개 식별 설정이며 비밀 키가 아닙니다. 서비스 계정 키와 로그인 토큰은 저장소에 넣지 않습니다.
 
 초기 아이별 교재·수업 설정은 `dist/app.js`의 `seed`에 있습니다. 개인 백업 파일, 로컬 미리보기 이미지 및 Sites 호스팅 식별 정보는 Git 추적에서 제외합니다.
 
 ## 작업 저장소
 
 https://github.com/hyunqwer/homework
+
+로그인 상태가 교차 도메인 저장 제한의 영향을 받지 않도록 `firebaseapp.com`을 표준 접속 주소로 사용합니다. `web.app` 접속은 같은 프로젝트의 표준 주소로 이동합니다.

@@ -13,3 +13,6 @@ node_modules/
 삼남매영어-백업-*.json
 *.tar.gz
 *.log
+
+.firebase/
+/firebase-preview*.png
